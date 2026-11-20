@@ -1,0 +1,18 @@
+# Zavisnosti – svako ih pravi sa npm install
+node_modules/
+
+# Kompajlirani kod (kad budemo pravili build)
+dist/
+
+# Tajne: lozinke, API ključevi
+.env
+
+# Podaci koje generiše aplikacija
+tasks.json
+
+# Logovi
+*.log
+
+# Sistemski fajlovi
+.DS_Store
+Thumbs.db

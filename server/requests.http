@@ -1,0 +1,50 @@
+### Svi projekti
+GET http://localhost:3000/projects
+
+### Jedan projekat
+GET http://localhost:3000/projects/euro-elite
+
+### Novi projekat
+POST http://localhost:3000/projects
+Content-Type: application/json
+
+{
+  "slug": "portfolio",
+  "title": "Portfolio sajt",
+  "description": "Moj lični sajt sa projektima.",
+  "technologies": ["TypeScript", "React", "Node.js"],
+  "githubUrl": "https://github.com/Vasic11/portfolio",
+  "featured": true
+}
+
+### Neispravan projekat
+POST http://localhost:3000/projects
+Content-Type: application/json
+
+{
+  "slug": "Moj Projekat",
+  "titel": "x",
+  "description": "kratko",
+  "technologies": 5,
+  "githubUrl": "nije-link",
+  "featured": "da"
+}
+
+### Izmena
+PATCH http://localhost:3000/projects/qa-testing
+Content-Type: application/json
+
+{
+  "title": "QA i load testiranje"
+}
+
+### Neispravna izmena
+PATCH http://localhost:3000/projects/qa-testing
+Content-Type: application/json
+
+{
+  "githubUrl": "nije-link"
+}
+
+### Brisanje
+DELETE http://localhost:3000/projects/qa-testing
