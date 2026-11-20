@@ -16,3 +16,6 @@ tasks.json
 # Sistemski fajlovi
 .DS_Store
 Thumbs.db
+
+# Baza podataka
+*.db
