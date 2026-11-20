@@ -1,3 +1,8 @@
+@token = {{$dotenv GITHUB_TOKEN}}
+### GitHub: limit sa tokenom
+GET https://api.github.com/rate_limit
+Authorization: Bearer {{token}}
+
 ### Svi projekti
 GET http://localhost:3000/projects
 
@@ -48,3 +53,16 @@ Content-Type: application/json
 
 ### Brisanje
 DELETE http://localhost:3000/projects/qa-testing
+
+### Projekat iz organizacije
+GET http://localhost:3000/projects/graffito
+
+### Shell projekat
+GET http://localhost:3000/projects/shell-data-pipeline
+
+
+### GitHub: podaci o repou
+GET https://api.github.com/repos/Vasic11/euro-elite
+
+### GitHub: jezici
+GET https://api.github.com/repos/Vasic11/euro-elite/languages

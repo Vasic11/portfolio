@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "./db/index.js";
 import { projectsTable } from "./db/schema.js";
 import { createProjectSchema, updateProjectSchema } from "./projects.js";
+import { getGithubInfo } from "./github.js";
 
 const app = express();
 app.use(express.json());
@@ -38,7 +39,9 @@ app.get("/projects/:slug", async (req, res) => {
     res.status(404).json({ error: "Projekat nije pronađen" });
     return;
   }
-  res.json(project);
+
+  const github = await getGithubInfo(project.githubUrl);
+  res.json({ ...project, github });
 });
 
 app.post("/projects", async (req, res) => {
