@@ -1,5 +1,7 @@
-import express from "express";
+import express, { type Request, type Response } from "express";
 import { z } from "zod";
+import cookieParser from "cookie-parser";
+import { checkPassword, clearSession, createSession, isLoggedIn, requireAuth } from "./auth.js";
 import { eq } from "drizzle-orm";
 import { db } from "./db/index.js";
 import { projectsTable } from "./db/schema.js";
@@ -8,6 +10,28 @@ import { getGithubInfo } from "./github.js";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+
+const loginSchema = z.object({ password: z.string().min(1) });
+
+app.post("/auth/login", async (req, res) => {
+  const result = loginSchema.safeParse(req.body);
+  if (!result.success || !(await checkPassword(result.data.password))) {
+    res.status(401).json({ error: "Pogrešna lozinka" });
+    return;
+  }
+  await createSession(res);
+  res.json({ ok: true });
+});
+
+app.post("/auth/logout", (req, res) => {
+  clearSession(res);
+  res.json({ ok: true });
+});
+
+app.get("/auth/me", async (req, res) => {
+  res.json({ loggedIn: await isLoggedIn(req) });
+});
 
 app.get("/", (req, res) => {
   res.json({ message: "Portfolio API radi!" });
@@ -44,7 +68,7 @@ app.get("/projects/:slug", async (req, res) => {
   res.json({ ...project, github });
 });
 
-app.post("/projects", async (req, res) => {
+app.post("/projects", requireAuth, async (req, res) => {
   const result = createProjectSchema.safeParse(req.body);
   if (!result.success) {
     res.status(400).json({
@@ -66,8 +90,7 @@ app.post("/projects", async (req, res) => {
   res.status(201).json(newProject);
 });
 
-app.patch("/projects/:slug", async (req, res) => {
-  const project = await db.query.projectsTable.findFirst({
+app.patch("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>, res: Response) => {  const project = await db.query.projectsTable.findFirst({
     where: eq(projectsTable.slug, req.params.slug),
   });
   if (!project) {
@@ -103,8 +126,7 @@ app.patch("/projects/:slug", async (req, res) => {
   res.json(updated);
 });
 
-app.delete("/projects/:slug", async (req, res) => {
-  const deleted = await db
+app.delete("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>, res: Response) => {  const deleted = await db
     .delete(projectsTable)
     .where(eq(projectsTable.slug, req.params.slug))
     .returning();
