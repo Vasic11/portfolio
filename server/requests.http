@@ -14,8 +14,8 @@ POST http://localhost:3000/projects
 Content-Type: application/json
 
 {
-  "slug": "portfolio",
-  "title": "Portfolio sajt",
+  "slug": "new-project",
+  "title": "proba1",
   "description": "Moj lični sajt sa projektima.",
   "technologies": ["TypeScript", "React", "Node.js"],
   "githubUrl": "https://github.com/Vasic11/portfolio",
@@ -52,7 +52,7 @@ Content-Type: application/json
 }
 
 ### Brisanje
-DELETE http://localhost:3000/projects/qa-testing
+DELETE http://localhost:3000/projects/new-project
 
 ### Projekat iz organizacije
 GET http://localhost:3000/projects/graffito
