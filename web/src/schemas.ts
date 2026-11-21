@@ -7,6 +7,7 @@ export const projectFormSchema = z.object({
   technologies: z.string().min(1, "Navedi bar jednu tehnologiju"),
   githubUrl: z.url("Neispravan link"),
   liveUrl: z.union([z.literal(""), z.url("Neispravan link")]),
+  imageUrl: z.string(),
   featured: z.boolean(),
 });
 

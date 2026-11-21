@@ -6,6 +6,7 @@ export interface Project {
   technologies: string[];
   githubUrl: string;
   liveUrl: string | null;
+  imageUrl: string | null;
   featured: boolean;
   createdAt: string;
 }

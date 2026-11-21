@@ -19,3 +19,6 @@ Thumbs.db
 
 # Baza podataka
 *.db
+
+# Slike koje se uploaduju preko admina
+uploads/

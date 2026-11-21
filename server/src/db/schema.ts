@@ -8,6 +8,7 @@ export const projectsTable = sqliteTable("projects", {
   technologies: text("technologies", { mode: "json" }).$type<string[]>().notNull(),
   githubUrl: text("github_url").notNull(),
   liveUrl: text("live_url"),
+  imageUrl: text("image_url"),
   featured: integer("featured", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
 });

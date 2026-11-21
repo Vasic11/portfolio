@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import type { ProjectInput } from "../api";
+import { ImageUpload } from "./ImageUpload";
 import { projectFormSchema, type ProjectFormValues } from "../schemas";
 
 interface ProjectFormProps {
@@ -15,6 +16,7 @@ const emptyValues: ProjectFormValues = {
   technologies: "",
   githubUrl: "",
   liveUrl: "",
+  imageUrl: "",
   featured: false,
 };
 
@@ -30,6 +32,7 @@ export function ProjectForm({ initialValues = emptyValues, submitLabel, onSubmit
         ...value,
         technologies: value.technologies.split(",").map(t => t.trim()).filter(Boolean),
         liveUrl: value.liveUrl === "" ? undefined : value.liveUrl,
+        imageUrl: value.imageUrl === "" ? null : value.imageUrl,
       });
     },
   });
@@ -133,6 +136,15 @@ export function ProjectForm({ initialValues = emptyValues, submitLabel, onSubmit
             />
             <FieldError meta={field.state.meta} />
           </label>
+        )}
+      </form.Field>
+
+      <form.Field name="imageUrl">
+        {field => (
+          <div className="flex flex-col gap-2 text-sm text-zinc-400">
+            Slika projekta (opciono)
+            <ImageUpload value={field.state.value} onChange={field.handleChange} />
+          </div>
         )}
       </form.Field>
 

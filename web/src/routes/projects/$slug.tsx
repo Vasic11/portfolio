@@ -49,6 +49,14 @@ function ProjectPage() {
         </div>
       </header>
 
+      {project.imageUrl && (
+        <img
+          src={project.imageUrl}
+          alt={project.title}
+          className="mt-10 aspect-video w-full rounded-2xl border border-zinc-800 object-cover"
+        />
+      )}
+
       <section className="mt-12">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">Tehnologije</h2>
         <ul className="mt-4 flex flex-wrap gap-2">

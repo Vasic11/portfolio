@@ -41,6 +41,7 @@ function EditProjectPage() {
           technologies: project.technologies.join(", "),
           githubUrl: project.githubUrl,
           liveUrl: project.liveUrl ?? "",
+          imageUrl: project.imageUrl ?? "",
           featured: project.featured,
         }}
         onSubmit={data => updateMutation.mutateAsync(data)}

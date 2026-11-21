@@ -18,6 +18,7 @@ export const createProjectSchema = z.object({
   technologies: z.array(z.string()).min(1, "Navedi bar jednu tehnologiju"),
   githubUrl: z.url("Neispravan GitHub link"),
   liveUrl: z.url("Neispravan demo link").optional(),
+  imageUrl: z.string().startsWith("/uploads/").nullable().optional(),
   featured: z.boolean().default(false),
 });
 

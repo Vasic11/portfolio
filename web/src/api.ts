@@ -46,6 +46,7 @@ export interface ProjectInput {
   technologies: string[];
   githubUrl: string;
   liveUrl?: string;
+  imageUrl: string | null;
   featured: boolean;
 }
 
@@ -67,4 +68,36 @@ export function createProject(data: ProjectInput) {
 
 export function updateProject(slug: string, data: ProjectInput) {
   return sendProject(`/api/projects/${slug}`, "PATCH", data);
+}
+
+export async function deleteProject(slug: string): Promise<void> {
+  const res = await fetch(`/api/projects/${slug}`, { method: "DELETE" });
+  if (res.status === 401) throw new Error("Nisi prijavljen");
+  if (!res.ok) throw new Error(`Server je vratio grešku ${res.status}`);
+}
+
+export async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch("/api/uploads", { method: "POST", body: formData });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? `Server je vratio grešku ${res.status}`);
+  return body.url;
+}
+
+export interface PinnedRepo {
+  name: string;
+  slug: string;
+  description: string;
+  url: string;
+  homepageUrl: string;
+  languages: string[];
+  imported: boolean;
+}
+
+export async function fetchPinnedRepos(): Promise<PinnedRepo[]> {
+  const res = await fetch("/api/github/pinned");
+  if (!res.ok) throw new Error(`GitHub uvoz nije uspeo (${res.status})`);
+  return res.json();
 }

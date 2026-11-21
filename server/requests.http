@@ -81,3 +81,16 @@ GET http://localhost:3000/auth/me
 
 ### Odjava
 POST http://localhost:3000/auth/logout
+
+### GitHub: pinovani repoi (GraphQL)
+POST https://api.github.com/graphql
+Authorization: Bearer {{$dotenv GITHUB_TOKEN}}
+Content-Type: application/json
+
+{
+  "query": "query { viewer { login pinnedItems(first: 6, types: REPOSITORY) { nodes { ... on Repository { name url } } } } }"
+}
+
+### Pinovani repoi preko mog API-ja (treba prijava)
+GET http://localhost:3000/github/pinned
+

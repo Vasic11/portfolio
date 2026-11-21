@@ -1,16 +1,30 @@
-import express, { type Request, type Response } from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import { z } from "zod";
 import cookieParser from "cookie-parser";
+import { mkdirSync } from "node:fs";
+import multer from "multer";
+import { UPLOAD_DIR, upload } from "./uploads.js";
 import { checkPassword, clearSession, createSession, isLoggedIn, requireAuth } from "./auth.js";
 import { eq } from "drizzle-orm";
 import { db } from "./db/index.js";
 import { projectsTable } from "./db/schema.js";
 import { createProjectSchema, updateProjectSchema } from "./projects.js";
-import { getGithubInfo } from "./github.js";
+import { fetchPinnedRepos, getGithubInfo } from "./github.js";
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+
+mkdirSync(UPLOAD_DIR, { recursive: true });
+app.use("/uploads", express.static(UPLOAD_DIR));
+
+app.post("/uploads", requireAuth, upload.single("image"), (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: "Pošalji sliku (PNG, JPG ili WebP, najviše 5 MB)" });
+    return;
+  }
+  res.status(201).json({ url: `/uploads/${req.file.filename}` });
+});
 
 const loginSchema = z.object({ password: z.string().min(1) });
 
@@ -135,6 +149,25 @@ app.delete("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>
     return;
   }
   res.status(204).send();
+});
+
+app.get("/github/pinned", requireAuth, async (req, res) => {
+  const [repos, projects] = await Promise.all([fetchPinnedRepos(), db.select().from(projectsTable)]);
+
+  const normalize = (url: string) => url.toLowerCase().replace(/\/+$/, "");
+  const existing = new Set(projects.map(p => normalize(p.githubUrl)));
+
+  res.json(repos.map(repo => ({ ...repo, imported: existing.has(normalize(repo.url)) })));
+});
+
+app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof multer.MulterError) {
+    const message = err.code === "LIMIT_FILE_SIZE" ? "Slika je veća od 5 MB" : "Neispravan fajl";
+    res.status(400).json({ error: message });
+    return;
+  }
+  console.error(err);
+  res.status(500).json({ error: "Greška na serveru" });
 });
 
 app.listen(3000, () => {

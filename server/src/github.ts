@@ -87,3 +87,72 @@ export async function getGithubInfo(githubUrl: string): Promise<GithubInfo | nul
   cache.set(githubUrl, { data, expiresAt: Date.now() + CACHE_TTL_MS });
   return data;
 }
+const pinnedSchema = z.object({
+  data: z.object({
+    viewer: z.object({
+      pinnedItems: z.object({
+        nodes: z.array(
+          z.object({
+            name: z.string(),
+            description: z.string().nullable(),
+            url: z.string(),
+            homepageUrl: z.string().nullable(),
+            languages: z.object({ nodes: z.array(z.object({ name: z.string() })) }),
+          }),
+        ),
+      }),
+    }),
+  }),
+});
+
+const PINNED_QUERY = `
+  query {
+    viewer {
+      pinnedItems(first: 6, types: REPOSITORY) {
+        nodes {
+          ... on Repository {
+            name
+            description
+            url
+            homepageUrl
+            languages(first: 5, orderBy: { field: SIZE, direction: DESC }) {
+              nodes { name }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export interface PinnedRepo {
+  name: string;
+  slug: string;
+  description: string;
+  url: string;
+  homepageUrl: string;
+  languages: string[];
+}
+
+export async function fetchPinnedRepos(): Promise<PinnedRepo[]> {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error("GITHUB_TOKEN nije podešen u .env");
+
+  const res = await fetch("https://api.github.com/graphql", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ query: PINNED_QUERY }),
+  });
+  if (!res.ok) throw new Error(`GitHub GraphQL ${res.status}`);
+
+  const json = pinnedSchema.parse(await res.json());
+
+  return json.data.viewer.pinnedItems.nodes.map(repo => ({
+    name: repo.name,
+    slug: repo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+    description: repo.description ?? "",
+    url: repo.url,
+    homepageUrl: repo.homepageUrl ?? "",
+    languages: repo.languages.nodes.map(l => l.name),
+  }));
+}

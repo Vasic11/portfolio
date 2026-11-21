@@ -1,13 +1,14 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects } from "../../api";
+import { ProjectsTable } from "../../components/ProjectsTable";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminHome,
 });
 
 function AdminHome() {
-  const { data: projects = [] } = useQuery({
+  const { data: projects = [], isPending } = useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
   });
@@ -24,20 +25,7 @@ function AdminHome() {
         </Link>
       </div>
 
-      <ul className="divide-y divide-zinc-800 rounded-xl border border-zinc-800">
-        {projects.map(project => (
-          <li key={project.id} className="flex items-center justify-between px-5 py-4">
-            <span>{project.title}</span>
-            <Link
-              to="/admin/projects/$slug/edit"
-              params={{ slug: project.slug }}
-              className="text-sm text-zinc-400 hover:text-white"
-            >
-              Izmeni
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {isPending ? <p className="text-zinc-500">Učitavanje...</p> : <ProjectsTable projects={projects} />}
     </div>
   );
 }

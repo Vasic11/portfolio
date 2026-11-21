@@ -8,6 +8,13 @@ interface ProjectCardProps {
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <article className="flex flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 transition-colors hover:border-zinc-600">
+      {project.imageUrl && (
+        <img
+          src={project.imageUrl}
+          alt={project.title}
+          className="-mx-6 -mt-6 aspect-video w-[calc(100%+3rem)] max-w-none rounded-t-2xl border-b border-zinc-800 object-cover"
+        />
+      )}
       <div className="flex items-baseline justify-between gap-4">
         <h2 className="text-xl font-semibold">
           <Link to="/projects/$slug" params={{ slug: project.slug }} className="hover:underline">
