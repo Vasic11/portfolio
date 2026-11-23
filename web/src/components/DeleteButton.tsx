@@ -15,7 +15,7 @@ export function DeleteButton({ slug }: { slug: string }) {
 
   if (!confirming) {
     return (
-      <button type="button" onClick={() => setConfirming(true)} className="text-zinc-500 hover:text-red-400">
+      <button type="button" onClick={() => setConfirming(true)} className="text-muted hover:text-red-500">
         Obriši
       </button>
     );
@@ -27,11 +27,11 @@ export function DeleteButton({ slug }: { slug: string }) {
         type="button"
         onClick={() => deleteMutation.mutate(slug)}
         disabled={deleteMutation.isPending}
-        className="font-medium text-red-400 hover:text-red-300"
+        className="font-medium text-red-500 hover:text-red-600"
       >
         {deleteMutation.isPending ? "Brisanje..." : "Sigurno?"}
       </button>
-      <button type="button" onClick={() => setConfirming(false)} className="text-zinc-500 hover:text-white">
+      <button type="button" onClick={() => setConfirming(false)} className="text-muted hover:text-fg">
         Otkaži
       </button>
     </span>

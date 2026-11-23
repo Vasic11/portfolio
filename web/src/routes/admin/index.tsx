@@ -16,16 +16,16 @@ function AdminHome() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <p className="text-zinc-400">Na sajtu je {projects.length} projekata.</p>
+        <p className="text-muted">Na sajtu je {projects.length} projekata.</p>
         <Link
           to="/admin/projects/new"
-          className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-zinc-950 hover:bg-zinc-200"
+          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-colors hover:bg-accent/90"
         >
           + Novi projekat
         </Link>
       </div>
 
-      {isPending ? <p className="text-zinc-500">Učitavanje...</p> : <ProjectsTable projects={projects} />}
+      {isPending ? <p className="text-muted">Učitavanje...</p> : <ProjectsTable projects={projects} />}
     </div>
   );
 }

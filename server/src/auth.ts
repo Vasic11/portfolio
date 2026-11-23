@@ -27,7 +27,8 @@ export async function createSession(res: Response) {
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    // Na Vercel-u sajt ide preko HTTPS-a, pa kolačić šaljemo samo preko šifrovane veze.
+    secure: process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL),
     maxAge: SESSION_DAYS * 24 * 60 * 60 * 1000,
   });
 }

@@ -7,7 +7,11 @@
     "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
-    "hash-password": "tsx scripts/hash-password.ts"
+    "hash-password": "tsx scripts/hash-password.ts",
+    "content:case-studies": "tsx scripts/case-studies.ts",
+    "db:push:turso": "drizzle-kit push --config=drizzle.turso.config.ts",
+    "db:copy-to-turso": "tsx scripts/copy-to-turso.ts",
+    "content:uploads-to-db": "tsx scripts/uploads-to-db.ts"
   },
   "keywords": [],
   "author": "",

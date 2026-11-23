@@ -14,22 +14,23 @@ export function GithubImport({ onPick }: GithubImportProps) {
   const available = repos.filter(repo => !repo.imported);
 
   return (
-    <section className="mb-10 rounded-xl border border-zinc-800 p-5">
-      <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-500">Uvezi sa GitHuba</h3>
+    <section className="mb-6 max-w-2xl rounded-2xl border border-line bg-card p-5 sm:p-6">
+      <h3 className="text-lg font-semibold text-fg">Uvezi sa GitHuba</h3>
+      <p className="mt-1 text-sm text-muted">Klik na pinovan repo popuni formu ispod.</p>
 
-      {isPending && <p className="mt-3 text-sm text-zinc-500">Učitavanje pinovanih repoa...</p>}
-      {error && <p className="mt-3 text-sm text-red-400">{error.message}</p>}
+      {isPending && <p className="mt-3 text-sm text-muted">Učitavanje pinovanih repoa...</p>}
+      {error && <p className="mt-3 text-sm text-red-500">{error.message}</p>}
       {!isPending && !error && available.length === 0 && (
-        <p className="mt-3 text-sm text-zinc-500">Svi pinovani repoi su već na sajtu.</p>
+        <p className="mt-3 text-sm text-muted">Svi pinovani repoi su već na sajtu.</p>
       )}
 
-      <ul className="mt-3 flex flex-wrap gap-2">
+      <ul className="mt-4 flex flex-wrap gap-2">
         {available.map(repo => (
           <li key={repo.url}>
             <button
               type="button"
               onClick={() => onPick(repo)}
-              className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm hover:border-zinc-400 hover:bg-zinc-800"
+              className="rounded-lg border border-line bg-bg px-3 py-1.5 font-mono text-sm text-fg transition-colors hover:border-accent/60"
             >
               {repo.name}
             </button>

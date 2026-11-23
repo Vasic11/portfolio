@@ -1,29 +1,43 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 import { z } from "zod";
 import cookieParser from "cookie-parser";
-import { mkdirSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import multer from "multer";
-import { UPLOAD_DIR, upload } from "./uploads.js";
+import { IMAGE_TYPES, MAX_IMAGE_MB, upload } from "./uploads.js";
 import { checkPassword, clearSession, createSession, isLoggedIn, requireAuth } from "./auth.js";
 import { eq } from "drizzle-orm";
 import { db } from "./db/index.js";
-import { projectsTable } from "./db/schema.js";
+import { imagesTable, projectsTable } from "./db/schema.js";
 import { createProjectSchema, updateProjectSchema } from "./projects.js";
 import { fetchPinnedRepos, getGithubInfo } from "./github.js";
+import { TranslateError, translateToEnglish } from "./translate.js";
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-mkdirSync(UPLOAD_DIR, { recursive: true });
-app.use("/uploads", express.static(UPLOAD_DIR));
-
-app.post("/uploads", requireAuth, upload.single("image"), (req, res) => {
+app.post("/uploads", requireAuth, upload.single("image"), async (req, res) => {
   if (!req.file) {
-    res.status(400).json({ error: "Pošalji sliku (PNG, JPG ili WebP, najviše 5 MB)" });
+    res.status(400).json({ error: `Pošalji sliku (PNG, JPG ili WebP, najviše ${MAX_IMAGE_MB} MB)` });
     return;
   }
-  res.status(201).json({ url: `/uploads/${req.file.filename}` });
+
+  const id = `${randomUUID()}${IMAGE_TYPES[req.file.mimetype]}`;
+  await db.insert(imagesTable).values({ id, contentType: req.file.mimetype, data: req.file.buffer });
+  res.status(201).json({ url: `/uploads/${id}` });
+});
+
+app.get("/uploads/:id", async (req, res) => {
+  const image = await db.query.imagesTable.findFirst({ where: eq(imagesTable.id, req.params.id) });
+  if (!image) {
+    res.status(404).json({ error: "Slika ne postoji" });
+    return;
+  }
+
+  // Slika sa istim imenom se nikad ne menja (nova slika dobije novo ime), pa browser i CDN smeju da je čuvaju godinu dana.
+  res.set("Content-Type", image.contentType);
+  res.set("Cache-Control", "public, max-age=31536000, immutable");
+  res.send(image.data);
 });
 
 const loginSchema = z.object({ password: z.string().min(1) });
@@ -104,7 +118,8 @@ app.post("/projects", requireAuth, async (req, res) => {
   res.status(201).json(newProject);
 });
 
-app.patch("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>, res: Response) => {  const project = await db.query.projectsTable.findFirst({
+app.patch("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>, res: Response) => {
+  const project = await db.query.projectsTable.findFirst({
     where: eq(projectsTable.slug, req.params.slug),
   });
   if (!project) {
@@ -140,7 +155,8 @@ app.patch("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>,
   res.json(updated);
 });
 
-app.delete("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>, res: Response) => {  const deleted = await db
+app.delete("/projects/:slug", requireAuth, async (req: Request<{ slug: string }>, res: Response) => {
+  const deleted = await db
     .delete(projectsTable)
     .where(eq(projectsTable.slug, req.params.slug))
     .returning();
@@ -160,9 +176,31 @@ app.get("/github/pinned", requireAuth, async (req, res) => {
   res.json(repos.map(repo => ({ ...repo, imported: existing.has(normalize(repo.url)) })));
 });
 
+const translateSchema = z.object({
+  texts: z.array(z.string().max(5000)).min(1).max(10),
+});
+
+app.post("/translate", requireAuth, async (req, res) => {
+  const parsed = translateSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Pošalji tekstove za prevod" });
+    return;
+  }
+
+  try {
+    res.json({ translations: await translateToEnglish(parsed.data.texts) });
+  } catch (error) {
+    if (error instanceof TranslateError) {
+      res.status(error.status).json({ error: error.message });
+      return;
+    }
+    throw error;
+  }
+});
+
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof multer.MulterError) {
-    const message = err.code === "LIMIT_FILE_SIZE" ? "Slika je veća od 5 MB" : "Neispravan fajl";
+    const message = err.code === "LIMIT_FILE_SIZE" ? `Slika je veća od ${MAX_IMAGE_MB} MB` : "Neispravan fajl";
     res.status(400).json({ error: message });
     return;
   }
@@ -170,6 +208,12 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: "Greška na serveru" });
 });
 
-app.listen(3000, () => {
-  console.log("Server radi na http://localhost:3000");
-});
+// Lokalno pokrećemo server sami. Na Vercel-u (gde postoji promenljiva VERCEL) Vercel sam prima zahteve
+// i prosleđuje ih aplikaciji koju izvozimo ispod.
+if (!process.env.VERCEL) {
+  app.listen(3000, () => {
+    console.log("Server radi na http://localhost:3000");
+  });
+}
+
+export default app;

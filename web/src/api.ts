@@ -47,6 +47,13 @@ export interface ProjectInput {
   githubUrl: string;
   liveUrl?: string;
   imageUrl: string | null;
+  problem: string | null;
+  role: string | null;
+  lessons: string | null;
+  descriptionEn: string | null;
+  problemEn: string | null;
+  roleEn: string | null;
+  lessonsEn: string | null;
   featured: boolean;
 }
 
@@ -100,4 +107,15 @@ export async function fetchPinnedRepos(): Promise<PinnedRepo[]> {
   const res = await fetch("/api/github/pinned");
   if (!res.ok) throw new Error(`GitHub uvoz nije uspeo (${res.status})`);
   return res.json();
+}
+
+export async function translateToEnglish(texts: string[]): Promise<string[]> {
+  const res = await fetch("/api/translate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ texts }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? `Server je vratio grešku ${res.status}`);
+  return body.translations;
 }

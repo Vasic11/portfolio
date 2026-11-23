@@ -3,7 +3,11 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { MotionConfig } from "motion/react";
 import { routeTree } from "./routeTree.gen";
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/dm-sans";
+import "@fontsource-variable/geist-mono";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -17,7 +21,9 @@ declare module "@tanstack/react-router" {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <MotionConfig reducedMotion="user">
+        <RouterProvider router={router} />
+      </MotionConfig>
       <ReactQueryDevtools />
     </QueryClientProvider>
   </StrictMode>,

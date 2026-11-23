@@ -1,25 +1,19 @@
-import { randomUUID } from "node:crypto";
-import path from "node:path";
 import multer from "multer";
 
-export const UPLOAD_DIR = "uploads";
+// Vercel prima najviše 4,5 MB po zahtevu, pa slike ograničavamo na 4 MB.
+export const MAX_IMAGE_MB = 4;
 
-const ALLOWED_TYPES: Record<string, string> = {
+export const IMAGE_TYPES: Record<string, string> = {
   "image/png": ".png",
   "image/jpeg": ".jpg",
   "image/webp": ".webp",
 };
 
+// memoryStorage: fajl ostaje u memoriji (req.file.buffer), a mi ga upišemo u bazu.
 export const upload = multer({
-  storage: multer.diskStorage({
-    destination: UPLOAD_DIR,
-    filename: (req, file, cb) => {
-      const ext = ALLOWED_TYPES[file.mimetype] ?? path.extname(file.originalname);
-      cb(null, `${randomUUID()}${ext}`);
-    },
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_IMAGE_MB * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    cb(null, file.mimetype in ALLOWED_TYPES);
+    cb(null, file.mimetype in IMAGE_TYPES);
   },
 });

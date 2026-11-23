@@ -9,7 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
-    "types": ["node"],
+    // "types": ["node"], -- isključeno: Vercel-ov kompajler ne nalazi tipove ovako; TypeScript ih ionako sam pronađe u node_modules/@types
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

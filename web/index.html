@@ -1,10 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="sr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mihajlo Vasic</title>
+    <meta name="description" content="Mihajlo Vasić, junior full-stack developer. Projekti u TypeScriptu, Reactu i Node.js-u." />
+    <script>
+      // Postavlja temu pre prvog prikaza, da stranica ne bi bljesnula pogrešnom temom.
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") === "light" ? "light" : "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <title>Mihajlo Vasić · Junior Full-Stack Developer</title>
   </head>
   <body>
     <div id="root"></div>

@@ -6,6 +6,8 @@ dist/
 
 # Tajne: lozinke, API ključevi
 .env
+.env.*
+!.env.example
 
 # Podaci koje generiše aplikacija
 tasks.json
@@ -22,3 +24,9 @@ Thumbs.db
 
 # Slike koje se uploaduju preko admina
 uploads/
+
+# Vercel CLI
+.vercel/
+
+# Privremeni fajlovi TanStack Router plugina
+.tanstack/

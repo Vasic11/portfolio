@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://mihajlo-portfolio-api.vercel.app/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://mihajlo-portfolio-api.vercel.app/uploads/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

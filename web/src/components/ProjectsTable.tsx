@@ -47,13 +47,13 @@ const columns = columnHelper.columns([
     id: "technologies",
     header: "Tehnologije",
     sortFn: "text",
-    cell: info => <span className="text-zinc-400">{info.getValue()}</span>,
+    cell: info => <span className="text-muted">{info.getValue()}</span>,
   }),
   columnHelper.accessor("featured", {
     header: "Istaknut",
     sortFn: "basic",
     cell: info =>
-      info.getValue() ? <span className="text-emerald-400">Da</span> : <span className="text-zinc-600">Ne</span>,
+      info.getValue() ? <span className="text-accent">Da</span> : <span className="text-muted/60">Ne</span>,
   }),
   columnHelper.accessor("createdAt", {
     header: "Datum",
@@ -90,12 +90,12 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
         value={search}
         onChange={e => setSearch(e.target.value)}
         placeholder="Pretraži projekte..."
-        className="w-full max-w-xs rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm outline-none focus:border-zinc-400"
+        className="w-full max-w-xs rounded-lg border border-line bg-card px-4 py-2 text-sm text-fg placeholder:text-muted/60 outline-none transition-colors focus:border-accent"
       />
 
-      <div className="overflow-x-auto rounded-xl border border-zinc-800">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-card">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-zinc-800 text-zinc-500">
+          <thead className="border-b border-line text-muted">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
@@ -104,7 +104,7 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
                       <button
                         type="button"
                         onClick={header.column.getToggleSortingHandler()}
-                        className="flex items-center gap-1 hover:text-white"
+                        className="flex items-center gap-1 hover:text-fg"
                       >
                         <table.FlexRender header={header} />
                         {header.column.getIsSorted() === "asc" && " ↑"}
@@ -118,9 +118,9 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-zinc-800">
+          <tbody className="divide-y divide-line">
             {rows.map(row => (
-              <tr key={row.id} className="hover:bg-zinc-900">
+              <tr key={row.id} className="transition-colors hover:bg-bg/50">
                 {row.getAllCells().map(cell => (
                   <td key={cell.id} className="px-5 py-3">
                     <table.FlexRender cell={cell} />
@@ -131,7 +131,7 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
           </tbody>
         </table>
 
-        {rows.length === 0 && <p className="px-5 py-6 text-center text-zinc-500">Nema projekata za "{search}"</p>}
+        {rows.length === 0 && <p className="px-5 py-6 text-center text-muted">Nema projekata za "{search}"</p>}
       </div>
     </div>
   );

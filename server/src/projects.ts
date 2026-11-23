@@ -19,6 +19,13 @@ export const createProjectSchema = z.object({
   githubUrl: z.url("Neispravan GitHub link"),
   liveUrl: z.url("Neispravan demo link").optional(),
   imageUrl: z.string().startsWith("/uploads/").nullable().optional(),
+  problem: z.string().max(2000).nullable().optional(),
+  role: z.string().max(2000).nullable().optional(),
+  lessons: z.string().max(2000).nullable().optional(),
+  descriptionEn: z.string().max(2000).nullable().optional(),
+  problemEn: z.string().max(2000).nullable().optional(),
+  roleEn: z.string().max(2000).nullable().optional(),
+  lessonsEn: z.string().max(2000).nullable().optional(),
   featured: z.boolean().default(false),
 });
 

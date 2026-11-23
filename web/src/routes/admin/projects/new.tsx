@@ -19,6 +19,13 @@ function repoToFormValues(repo: PinnedRepo): ProjectFormValues {
     githubUrl: repo.url,
     liveUrl: repo.homepageUrl,
     imageUrl: "",
+    problem: "",
+    role: "",
+    lessons: "",
+    descriptionEn: "",
+    problemEn: "",
+    roleEn: "",
+    lessonsEn: "",
     featured: false,
   };
 }
@@ -43,7 +50,7 @@ function NewProjectPage() {
 
       <GithubImport onPick={setPickedRepo} />
 
-      {createMutation.error && <p className="mb-4 text-red-400">{createMutation.error.message}</p>}
+      {createMutation.error && <p className="mb-4 text-red-500">{createMutation.error.message}</p>}
       <ProjectForm
         key={pickedRepo?.url ?? "empty"}
         initialValues={pickedRepo ? repoToFormValues(pickedRepo) : undefined}

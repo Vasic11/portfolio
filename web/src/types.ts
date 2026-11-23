@@ -7,6 +7,13 @@ export interface Project {
   githubUrl: string;
   liveUrl: string | null;
   imageUrl: string | null;
+  problem: string | null;
+  role: string | null;
+  lessons: string | null;
+  descriptionEn: string | null;
+  problemEn: string | null;
+  roleEn: string | null;
+  lessonsEn: string | null;
   featured: boolean;
   createdAt: string;
 }

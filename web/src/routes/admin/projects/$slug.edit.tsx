@@ -25,13 +25,13 @@ function EditProjectPage() {
     },
   });
 
-  if (isPending) return <p className="text-zinc-500">Učitavanje...</p>;
-  if (error) return <p className="text-red-400">Greška: {error.message}</p>;
+  if (isPending) return <p className="text-muted">Učitavanje...</p>;
+  if (error) return <p className="text-red-500">Greška: {error.message}</p>;
 
   return (
     <div>
       <h2 className="mb-6 text-xl font-semibold">Izmena: {project.title}</h2>
-      {updateMutation.error && <p className="mb-4 text-red-400">{updateMutation.error.message}</p>}
+      {updateMutation.error && <p className="mb-4 text-red-500">{updateMutation.error.message}</p>}
       <ProjectForm
         submitLabel="Sačuvaj izmene"
         initialValues={{
@@ -42,6 +42,13 @@ function EditProjectPage() {
           githubUrl: project.githubUrl,
           liveUrl: project.liveUrl ?? "",
           imageUrl: project.imageUrl ?? "",
+          problem: project.problem ?? "",
+          role: project.role ?? "",
+          lessons: project.lessons ?? "",
+          descriptionEn: project.descriptionEn ?? "",
+          problemEn: project.problemEn ?? "",
+          roleEn: project.roleEn ?? "",
+          lessonsEn: project.lessonsEn ?? "",
           featured: project.featured,
         }}
         onSubmit={data => updateMutation.mutateAsync(data)}
